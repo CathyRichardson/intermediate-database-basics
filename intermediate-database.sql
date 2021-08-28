@@ -95,6 +95,78 @@ WHERE album_id IN (
 
 -- Practice updating Rows
 -- #1
+UPDATE customer
+SET fax = null
+WHERE fax IS NOT null;
+
+-- SELECT * FROM customer
+-- WHERE fax IS NOT null;
+
+-- #2
+UPDATE customer
+SET company = 'Self'
+WHERE company IS null;
+
+-- #3
+UPDATE customer
+SET last_name = 'Thompson'
+WHERE first_name = 'Julia' AND last_name = 'Barnett';
+
+-- SELECT * FROM customer
+-- WHERE first_name = 'Julia' AND last_name = 'Barnett';
+
+-- #4
+UPDATE customer
+SET support_rep_id = 4
+WHERE email = 'luisrojas@yahoo.cl';
+
+-- #5
+UPDATE track
+SET composer = 'The darkness around us'
+WHERE genre_id = ( SELECT genre_id FROM genre WHERE name = 'Metal') 
+AND composer IS null;
+
+
+
+-- Group by
+-- #1
+SELECT count(*), genre.name
+FROM track
+JOIN genre ON genre.genre_id = track.genre_id
+GROUP BY genre.name;
+
+-- #2
+SELECT count(*), genre.name
+FROM track
+JOIN genre ON genre.genre_id = track.genre_id
+WHERE genre.name IN ('Pop', 'Rock')
+GROUP BY genre.name;
+
+-- #3
+SELECT ar.name, count(*) 
+FROM artist ar
+JOIN album al ON al.artist_id = ar.artist_id
+GROUP BY ar.name;
+
+
+
+-- Use Distinct
+-- #1
+SELECT DISTINCT composer 
+FROM track
+
+-- #2
+SELECT DISTINCT billing_postal_code 
+FROM invoice;
+
+-- #3
+SELECT DISTINCT company 
+FROM customer;
+
+
+
+-- Delete Rows
+-- #1
 -- #2
 -- #3
 -- #4
@@ -104,7 +176,8 @@ WHERE album_id IN (
 -- #8
 
 
--- Practice nested queries
+
+-- eCommerce Simulation
 -- #1
 -- #2
 -- #3
