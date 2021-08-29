@@ -126,6 +126,9 @@ SET composer = 'The darkness around us'
 WHERE genre_id = ( SELECT genre_id FROM genre WHERE name = 'Metal') 
 AND composer IS null;
 
+-- #6
+Refreshed
+
 
 
 -- Group by
@@ -166,23 +169,110 @@ FROM customer;
 
 
 -- Delete Rows
--- #1
+-- #1 
+copied and ran
+
 -- #2
+DELETE FROM practice_delete
+WHERE type = 'bronze';
+
 -- #3
+DELETE FROM practice_delete
+WHERE type = 'silver';
+
 -- #4
--- #5
--- #6
--- #7
--- #8
+DELETE FROM practice_delete
+WHERE value = 150;
 
 
 
 -- eCommerce Simulation
--- #1
--- #2
--- #3
--- #4
--- #5
--- #6
--- #7
--- #8
+-- Create 3 tables following the criteria in the summary.
+CREATE TABLE users ( 
+  id SERIAL PRIMARY KEY, 
+  name VARCHAR(100), 
+  email VARCHAR(100) 
+);
+
+CREATE TABLE products ( 
+  id SERIAL PRIMARY KEY, 
+  name VARCHAR(100), 
+  price DECIMAL 
+);
+
+CREATE TABLE orders ( 
+  id SERIAL PRIMARY KEY, 
+  order_num INTEGER, --  cannot be unique because there may be multiple products per order
+  product_id INTEGER REFERENCES products(id)  
+);
+
+-- Add some data to fill up each table.
+INSERT INTO users
+( name, email ) 
+VALUES 
+('bob', 'bob@bob.com'),
+('bob2', 'bob2@bob.com'),
+('bob3', 'bob3@bob.com');
+
+INSERT INTO products
+( name, price ) 
+VALUES 
+('camera', 1),
+('camera2', 2),
+('camera3', 3);
+
+
+INSERT INTO orders
+( order_num, product_id ) 
+VALUES 
+(55, 1),
+(55, 2),
+(66, 3);
+
+-- Get all products for the first order.
+SELECT o.order_num, p.name FROM orders o
+JOIN products p
+ON p.id = o.product_id
+WHERE o.order_num = 
+(SELECT min(order_num)FROM orders); --min order is first order
+
+-- Get all orders.
+SELECT o.order_num, p.name AS product_name, p.price FROM orders o
+JOIN products p
+ON p.id = o.product_id;
+
+-- Get the total cost of an order ( sum the price of all products on an order ).
+SELECT sum(p.price) FROM orders o
+JOIN products p
+ON p.id = o.product_id
+WHERE o.order_num = 55;
+
+SELECT o.order_num, sum(p.price) FROM orders o
+JOIN products p
+ON p.id = o.product_id
+WHERE o.order_num = 55
+GROUP BY o.order_num;   -- need a group by to include the order # in the result
+
+-- Add a foreign key reference from orders to users.
+ALTER TABLE orders
+ADD COLUMN user_id INTEGER REFERENCES users(id);
+
+-- Update the orders table to link a user to each order.
+UPDATE orders 
+SET	 user_id = 1
+WHERE order_num = 55;
+
+UPDATE orders 
+SET	 user_id = 2
+WHERE order_num = 66;
+
+-- Get all orders for a user.
+SELECT * FROM orders o
+JOIN users u ON o.user_id = u.id
+WHERE o.user_id = 1;
+
+-- Get how many orders each user has.
+SELECT u.name, count(DISTINCT o.order_num) 
+FROM orders o
+JOIN users u ON o.user_id = u.id
+GROUP BY u.name;
